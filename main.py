@@ -12,7 +12,7 @@ EPSILON = 0.9
 ALPHA = 0.1
 LAMBDA = 0.9
 MAX_EPISODES = 13
-FRESH_TIME = 0.01
+FRESH_TIME = 0.1
 
 
 def build_q_table(n_states, actions):
@@ -29,7 +29,7 @@ def choose_action(state, q_table):
     if (np.random.uniform() > EPSILON) or (state_action.all() == 0):
         action_name = np.random.choice(ACTIONS)
     else:
-        action_name = state_action.argmax()
+        action_name = ACTIONS[state_action.argmax()]
     return action_name
 
 
@@ -75,14 +75,14 @@ def rl():
 
             A = choose_action(S, q_table)
             S_, R = get_env_feedback(S, A)
-            q_predict = q_table.iloc[S, A]
+            q_predict = q_table.loc[S, A]
             if S_ != 'terminal':
                 q_target = R + LAMBDA * q_table.iloc[S_, :].max()
             else:
                 q_target = R
                 is_terminated = True
 
-            q_table.ix[S, A] += ALPHA * (q_target - q_predict)
+            q_table.loc[S, A] += ALPHA * (q_target - q_predict)
             S = S_
 
             update_env(S, episode, step_counter + 1)
